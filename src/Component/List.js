@@ -8,44 +8,42 @@ class List extends React.Component {
     super();
     this.state = {
       agenda: [
-        { nama: "Hari Peduli Sampah Nasional", tanggal: "21 Frebuari" },
-        { nama: "Hari Hutan Sedunia", tanggal: "21 Maret" },
-        { nama: "Hari Air Sedunia", tanggal: "22 Maret" },
-        { nama: "Hari Meteorologi Sedunia", tanggal: "23 Maret" },
-        { nama: "Hari Bumi", tanggal: "22 April" },
+        { judul: "Hari Peduli Sampah Nasional", tanggal: "21 Frebuari" },
+        { judul: "Hari Hutan Sedunia", tanggal: "21 Maret" },
+        { judul: "Hari Air Sedunia", tanggal: "22 Maret" },
+        { judul: "Hari Meteorologi Sedunia", tanggal: "23 Maret" },
+        { judul: "Hari Bumi", tanggal: "22 April" },
       ],
-      nama: "",
+      judul: "",
       tanggal: "",
+      selectedItem: null,
       action: "",
     };
   }
 
   SaveAgenda = (event) => {
     event.preventDefault();
+
     let temp = this.state.agenda;
 
     if (this.state.action === "insert") {
       temp.push({
-        nama: this.state.nama,
+        judul: this.state.judul,
         tanggal: this.state.tanggal,
       });
     } else if (this.state.action === "update") {
-      let index = temp.findIndex((item) => item.nama === this.state.nama);
-
-      temp[index].nama = this.state.nama;
+      let index = temp.indexOf(this.state.selectedItem);
+      temp[index].judul = this.state.judul;
       temp[index].tanggal = this.state.tanggal;
     }
+
     this.setState({ agenda: temp });
 
     $("#modal").modal("hide");
   };
-  bind = (event) => {
-    this.setState({ [event.target.name]: event.target.value });
-  };
-
   Add = () => {
     this.setState({
-      nama: "",
+      judul: "",
       tanggal: "",
       action: "insert",
     });
@@ -53,9 +51,10 @@ class List extends React.Component {
 
   Edit = (item) => {
     this.setState({
-      nama: item.nama,
+      judul: item.judul,
       tanggal: item.tanggal,
       action: "update",
+      selectedItem: item,
     });
   };
 
@@ -76,7 +75,7 @@ class List extends React.Component {
         {this.state.agenda.map((item, index) => {
           return (
             <Card
-              nama={item.nama}
+              nama={item.judul}
               tanggal={item.tanggal}
               nomor={index + 1}
               drop={() => this.Drop(item)}
@@ -102,23 +101,25 @@ class List extends React.Component {
               <div className="modal-header bg-dark text-white">
                 <h5>Form Agenda</h5>
               </div>
-              <form onSubmit={this.SaveAgenda}>
+              <form onSubmit={(event) => this.SaveAgenda(event)}>
                 <div className="modal-body">
                   Nama Event
                   <input
                     type="text"
-                    name="nama"
                     className="form-control"
-                    onChange={this.bind}
-                    value={this.state.nama}
+                    onChange={(ev) => this.setState({ judul: ev.target.value })}
+                    value={this.state.judul}
+                    required
                   />
                   Tanggal
                   <input
                     type="text"
-                    name="tanggal"
                     className="form-control"
-                    onChange={this.bind}
+                    onChange={(ev) =>
+                      this.setState({ tanggal: ev.target.value })
+                    }
                     value={this.state.tanggal}
+                    required
                   />
                 </div>
                 <div className="modal-footer">
